@@ -1,0 +1,12 @@
+-*- text -*-
+
+0.0.3
+
+- added missing activesupport dependency (btw, activesupport 3.0.0
+  requires i18n (run 'gem install i18n', for some reason this dependency
+  isn't listed in the gem).
+
+0.0.2
+
+- nailed the mail gem to explicit version 2.1.3, because the current
+  2.2.0 introduced some weird bugs.

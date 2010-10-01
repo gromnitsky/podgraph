@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby19
+# -*- ruby -*-
+
+# Copyright (c) 2010 Alexander Gromnitsky <mailto:alexander.gromnitsky@gmail.com>.
+
+require_relative '../lib/podgraph/posterous'
+
+$conf = {
+  send?: true,
+  config: 'config.yaml',
+  modes: %w(related mixed),
+  mode: 'related',
+  to: nil,
+  from: nil
+}
+
+def config_load()
+  begin
+    myconf = YAML.load_file($conf[:config])
+  rescue
+    abort("cannot parse #{$conf[:config]} in the current directory")
+  end
+  %w(to from).each { |i|
+    abort("missing #{i} in #{$conf[:config]}") if ! myconf.key?(i.to_sym)
+  }
+  $conf.merge!(myconf)
+end
+
+def cl_parse(myargs)
+  o = OptionParser.new()
+  o.banner = "#{File.basename($PROGRAM_NAME)} #{Podgraph::VERSION}.
+Create an email from a XHTML and inline images and send it to posterous.com.
+http://podgraph.posterous.com/
+
+Usage: #{File.basename($PROGRAM_NAME)} [options] file.html"
+  o.separator ""
+  o.on('-v', 'Be more verbose.') { |v| Podgraph::cfg[:verbose] += 1 }
+  o.on('-S', "Don't send, just dump the mail to stdout.") { |v| $conf[:send?] = false }
+  o.on('-m ARG', "1 of modes: Podgraph::#{$conf[:modes]}.",
+       $conf[:modes]) { |v| $conf[:mode] = v }
+
+  begin
+    o.parse!(myargs)
+  rescue
+    abort("cl parse error: #{$!}")
+  end
+end
+
+# --[ main ]------------------------------------------------------------
+
+config_load()
+
+cl_parse ARGV
+Podgraph::veputs(1, "CL options: #{ARGV}")
+unless ARGV.size >= 1
+  abort("Usage: #{File.basename($PROGRAM_NAME)} [options] filename.html
+Type \"#{File.basename($PROGRAM_NAME)} -h\" for the help.")
+end
+
+Podgraph::veputs(2, "cfg #{Podgraph::cfg}")
+begin
+  p = Podgraph::Posterous.new(ARGV[0], $conf[:to], $conf[:from], $conf[:mode])
+  Podgraph::veputs(2, "o: #{p.o}".to_s.encode('koi8-u'))
+  mail = p.generate()
+rescue
+  abort("HTML parsing failed: #{$!}")
+end
+
+if ! $conf[:send?]
+  puts mail.to_s()
+  exit 0
+end
+
+begin
+  mail.delivery_method :sendmail
+  mail.deliver
+rescue
+  abort("cannot send mail: #{$!}")
+end
