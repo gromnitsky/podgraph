@@ -1,24 +1,13 @@
-gem 'mail', '= 2.1.3'
 require 'mail'
-require 'active_support/core_ext/module/attribute_accessors'
-
 require 'rexml/document'
 require 'yaml'
 require 'optparse'
 
+require_relative 'trestle'
+include Podgraph
+
 # :include: ../../README.rdoc
 module Podgraph
-
-  VERSION = '0.0.3'
-  mattr_accessor :cfg
-  
-  self.cfg = Hash.new()
-  cfg[:verbose] = 0
-
-  def self.veputs(level, s)
-    puts(s) if cfg[:verbose] >= level
-  end
-
   # Reads XHTML file, analyses it, finds images, checks if they can be inlined,
   # generates multipart/relative or multipart/mixed MIME mail.
   class Posterous
@@ -26,12 +15,15 @@ module Podgraph
     # some options for mail generator; change with care
     attr_accessor :o
 
+    # a Trestle object
+    attr_accessor :trestle
+
     # Analyses _filename_. It must be a XHTML file.
     # _to_, _from_ are email.
     # _mode_ is 1 of 'related' or 'mixed' string.
-    def initialize(filename, to, from, mode)
+    def initialize(trestle, filename, to, from, mode)
       @o = Hash.new()
-      @o[:user_agent] = 'podgraph/' + VERSION
+      @o[:user_agent] = Podgraph::Meta::NAME + ?/ + Podgraph::Meta::VERSION
       @o[:subject] = ''
       @o[:body] = []
       @o[:attachment] = []
@@ -39,6 +31,8 @@ module Podgraph
       @o[:mode] = mode
       @o[:to] = to
       @o[:from] = from
+
+      @trestle = trestle
 
       fp = File.new(filename)
       begin
@@ -63,7 +57,7 @@ module Podgraph
         if i.name == 'img'
           if (src = i.attributes['src']) =~ /^\s*$/
             raise '<img> tag with missing or empty src attribute'
-          elsif src =~ /\s*(http|ftp):\/\//
+          elsif src =~ /\s*(https?|s?ftp):\/\//
             # we are ignoring URL's
             return
           else
@@ -88,10 +82,10 @@ module Podgraph
           next
         end
 
-        Podgraph::veputs(2, "node: #{i.name}")
+        @trestle.veputs(2, "node: #{i.name}")
         img_collect.call(i, @o[:attachment])
         i.each_recursive { |j|
-          Podgraph::veputs(2, "node recursive: #{j.name}")
+          @trestle.veputs(2, "node recursive: #{j.name}")
           img_collect.call(j, @o[:attachment])
         }
         
@@ -111,7 +105,7 @@ module Podgraph
       m.subject(@o[:subject])
       m.headers({'User-Agent' => @o[:user_agent]})
 
-      Podgraph::veputs(2, "Body lines=#{@o[:body].size}, bytes=#{@o[:body].to_s.bytesize}")
+      @trestle.veputs(2, "Body lines=#{@o[:body].size}, bytes=#{@o[:body].to_s.bytesize}")
       if @o[:attachment].size == 0
         m.content_disposition('inline')
         m.content_type('text/html; charset="UTF-8"')
@@ -145,7 +139,7 @@ module Podgraph
 
           @o[:a_marks].each { |k, v|
             if cid.key?(k)
-              Podgraph::veputs(2, "mark #{k} = #{v}; -> to #{cid[k]}")
+              @trestle.veputs(2, "mark #{k} = #{v}; -> to #{cid[k]}")
               # replace marks with corresponding content-id
               m.html_part.body.raw_source.sub!(v, "cid:#{cid[k][1..-1]}")
             else

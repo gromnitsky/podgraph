@@ -1,73 +1,58 @@
 #!/usr/bin/env ruby19
 # -*- ruby -*-
 
-# Copyright (c) 2010 Alexander Gromnitsky <mailto:alexander.gromnitsky@gmail.com>.
-
 require_relative '../lib/podgraph/posterous'
 
-$conf = {
-  send?: true,
-  config: 'config.yaml',
-  modes: %w(related mixed),
-  mode: 'related',
-  to: nil,
-  from: nil
-}
+$conf = {}
+u = Trestle.new $conf
 
-def config_load()
+$conf[:send?] = true
+$conf[:mailconfig] = 'config.yaml'
+$conf[:modes] = %w(related mixed)
+$conf[:mode] = 'related'
+$conf[:to] = nil
+$conf[:from] = nil
+$conf[:banner] = "#{File.basename($0)} [options] file.html"
+
+def mailconfig_load()
   begin
-    myconf = YAML.load_file($conf[:config])
+    myconf = YAML.load_file($conf[:mailconfig])
   rescue
-    abort("cannot parse #{$conf[:config]} in the current directory")
+    abort("cannot parse #{$conf[:mailconfig]} in the current directory")
   end
   %w(to from).each { |i|
-    abort("missing #{i} in #{$conf[:config]}") if ! myconf.key?(i.to_sym)
+    Trestle.errx(1, "missing #{i} in #{$conf[:mailconfig]}") if ! myconf.key?(i.to_sym)
   }
   $conf.merge!(myconf)
 end
 
-def cl_parse(myargs)
-  o = OptionParser.new()
-  o.banner = "#{File.basename($PROGRAM_NAME)} #{Podgraph::VERSION}.
-Create an email from a XHTML and inline images and send it to posterous.com.
-http://podgraph.posterous.com/
 
-Usage: #{File.basename($PROGRAM_NAME)} [options] file.html"
-  o.separator ""
-  o.on('-v', 'Be more verbose.') { |v| Podgraph::cfg[:verbose] += 1 }
-  o.on('-S', "Don't send, just dump the mail to stdout.") { |v| $conf[:send?] = false }
+# ---
+
+mailconfig_load
+
+u.config_parse(['foobar']) {|src|
+  o = u.cl_parse(src) # create an OptionParser object
+  o.on('-S', "Don't send, just dump the mail to stdout.") {
+    |v| $conf[:send?] = false
+  }
   o.on('-m ARG', "1 of modes: Podgraph::#{$conf[:modes]}.",
        $conf[:modes]) { |v| $conf[:mode] = v }
+  u.cl_parse(src, o) # run cl parser
+}
 
-  begin
-    o.parse!(myargs)
-  rescue
-    abort("cl parse error: #{$!}")
-  end
-end
+Trestle.errx(1, "1 parameter required") unless ARGV.size >= 1
 
-# --[ main ]------------------------------------------------------------
-
-config_load()
-
-cl_parse ARGV
-Podgraph::veputs(1, "CL options: #{ARGV}")
-unless ARGV.size >= 1
-  abort("Usage: #{File.basename($PROGRAM_NAME)} [options] filename.html
-Type \"#{File.basename($PROGRAM_NAME)} -h\" for the help.")
-end
-
-Podgraph::veputs(2, "cfg #{Podgraph::cfg}")
 begin
-  p = Podgraph::Posterous.new(ARGV[0], $conf[:to], $conf[:from], $conf[:mode])
-  Podgraph::veputs(2, "o: #{p.o}".to_s.encode('koi8-u'))
-  mail = p.generate()
+  p = Podgraph::Posterous.new(u, ARGV[0], $conf[:to], $conf[:from], $conf[:mode])
+  u.veputs(2, "o: #{p.o}".to_s.encode('koi8-u'))
+  mail = p.generate
 rescue
-  abort("HTML parsing failed: #{$!}")
+  Trestle.errx(1, "HTML parsing failed: #{$!}")
 end
 
 if ! $conf[:send?]
-  puts mail.to_s()
+  puts mail.to_s
   exit 0
 end
 
@@ -75,5 +60,5 @@ begin
   mail.delivery_method :sendmail
   mail.deliver
 rescue
-  abort("cannot send mail: #{$!}")
+  Trestle.errx(1, "cannot send mail: #{$!}")
 end

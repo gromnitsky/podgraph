@@ -1,5 +1,15 @@
 -*- text -*-
 
+0.0.4
+
+Tue Apr 19 19:01:14 EEST 2011
+
+- Fixed one RE to support https:// images.
+
+- Dropped activesupport dependency.
+
+- Injected falsework's naive template.
+
 0.0.3
 
 - added missing activesupport dependency (btw, activesupport 3.0.0

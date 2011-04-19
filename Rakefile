@@ -1,33 +1,34 @@
-# -*- ruby -*-
-
 require 'rake'
 require 'rake/gempackagetask'
 require 'rake/clean'
 require 'rake/rdoctask'
 require 'rake/testtask'
 
+require_relative 'lib/podgraph/meta'
+require_relative 'test/rake_git'
+
 spec = Gem::Specification.new do |s|
-  s.name = "podgraph"
+  s.name = Podgraph::Meta::NAME
+  s.version = Podgraph::Meta::VERSION
   s.summary = 'Creates a MIME mail from a XHTML source and delivers it to Posterous.com.'
-  s.version = '0.0.3'
-  s.author = 'Alexander Gromnitsky'
-  s.email = 'alexander.gromnitsky@gmail.com'
-  s.homepage = 'http://github.com/gromnitsky/' + s.name
+  s.description = 'Adequately scans XHTML for local inline images and appends them to the mail.'
+  s.author = Podgraph::Meta::AUTHOR
+  s.email = Podgraph::Meta::EMAIL
+  s.homepage = Podgraph::Meta::HOMEPAGE
   s.platform = Gem::Platform::RUBY
-  s.required_ruby_version = '>= 1.9'
-  s.files = FileList['lib/**/*.rb', 'bin/*', '[A-Z]*', 'test/**/*']
+  s.required_ruby_version = '>= 1.9.2'
+  s.files = git_ls('.')
   s.executables = [s.name]
-  s.has_rdoc = true
+
   s.test_files = FileList['test/test_*.rb']
   s.rdoc_options << '-m' << 'Podgraph'
   
-  s.add_dependency('mail', '= 2.1.3')
-  s.add_dependency('activesupport', '>= 3.0.0')
+  s.add_dependency('mail', '>= 2.2.17')
 end
 
 Rake::GemPackageTask.new(spec).define
 
-task :default => %(repackage)
+task default: [:repackage]
 
 Rake::RDocTask.new('doc') do |rd|
   rd.main = "Podgraph"
