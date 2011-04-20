@@ -12,7 +12,7 @@ $conf[:modes] = %w(related mixed)
 $conf[:mode] = 'related'
 $conf[:to] = nil
 $conf[:from] = nil
-$conf[:banner] = "#{File.basename($0)} [options] file.html"
+$conf[:banner] = "#{File.basename($0)} [options] file.html\nType 'ri #{Podgraph::Meta::NAME.capitalize}' for the help."
 
 def mailconfig_load()
   begin
@@ -29,19 +29,17 @@ end
 
 # ---
 
-mailconfig_load
-
 u.config_parse(['foobar']) {|src|
   o = u.cl_parse(src) # create an OptionParser object
-  o.on('-S', "Don't send, just dump the mail to stdout.") {
-    |v| $conf[:send?] = false
-  }
-  o.on('-m ARG', "1 of modes: Podgraph::#{$conf[:modes]}.",
-       $conf[:modes]) { |v| $conf[:mode] = v }
+  o.on('-c ARG', "Use another configuration file instead of",
+       $conf[:mailconfig]) { |v| $conf[:mailconfig] = v }
+  o.on('-S', "Don't send, just dump the mail to stdout") { |v| $conf[:send?] = false }
+  o.on('-m ARG', "Select mode: #{$conf[:modes].join(', ')}") { |v| $conf[:mode] = v }
   u.cl_parse(src, o) # run cl parser
 }
 
 Trestle.errx(1, "1 parameter required") unless ARGV.size >= 1
+mailconfig_load
 
 begin
   p = Podgraph::Posterous.new(u, ARGV[0], $conf[:to], $conf[:from], $conf[:mode])

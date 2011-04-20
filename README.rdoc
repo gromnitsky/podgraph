@@ -1,7 +1,7 @@
 = Name
 
-podgraph -- Create an email from a XHTML and inline images and send it
-to posterous.com.
+podgraph -- Create an email from XHTML + inline images and send it to
+posterous.com.
 
 = Synopsis
 
@@ -10,7 +10,7 @@ podgraph [-Sv] [-m ARG] file.html
 = Description
 
 It's a simple program that reads a XHTML file, extracts subject and body
-from the file, constructs an email and delivers it.
+from the file, constructs an email and delivers it to local MTA.
 
 The options are as follows:
 
@@ -33,10 +33,10 @@ reStructuredText. The idea is:
 
 == Features
 
-* Generates mail with inline images if it can found links in the XHTML
-  source to local images.
+* Generates mail with inline images if it can found links  to local
+  images in the XHTML file.
 
-* Charset of 'text/html' portion of a mail is always UTF8.
+* Charset of 'text/html' portion of a mail is always UTF-8.
 
 = Exit status
 

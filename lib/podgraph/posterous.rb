@@ -101,7 +101,8 @@ module Podgraph
       m = Mail.new()
       m.from(@o[:from])
       m.to(@o[:to])
-      m.content_transfer_encoding('8bit')
+      m.transport_encoding = Mail::Encodings.get_encoding('8bit')
+#      m.content_transfer_encoding('8bit')
       m.subject(@o[:subject])
       m.headers({'User-Agent' => @o[:user_agent]})
 
@@ -115,7 +116,6 @@ module Podgraph
           m.content_type('Multipart/Related')
         end
         m.html_part = Mail::Part.new {
-          content_transfer_encoding('8bit')
           content_type('text/html; charset=UTF-8')
         }
         m.html_part.body = @o[:body]
