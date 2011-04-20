@@ -12,7 +12,8 @@ $conf[:modes] = %w(related mixed)
 $conf[:mode] = 'related'
 $conf[:to] = nil
 $conf[:from] = nil
-$conf[:banner] = "#{File.basename($0)} [options] file.html\nType 'ri #{Podgraph::Meta::NAME.capitalize}' for the help."
+$conf[:banner] = "#{File.basename($0)} [options] [file.html]\nType 'ri #{Podgraph::Meta::NAME.capitalize}' for the help."
+$conf[:input] = nil
 
 def mailconfig_load()
   begin
@@ -38,11 +39,11 @@ u.config_parse(['foobar']) {|src|
   u.cl_parse(src, o) # run cl parser
 }
 
-Trestle.errx(1, "1 parameter required") unless ARGV.size >= 1
+ARGV.size < 1 ? $conf[:input] = STDIN : $conf[:input] = ARGV[0]
 mailconfig_load
 
 begin
-  p = Podgraph::Posterous.new(u, ARGV[0], $conf[:to], $conf[:from], $conf[:mode])
+  p = Podgraph::Posterous.new(u, $conf[:input], $conf[:to], $conf[:from], $conf[:mode])
   u.veputs(2, "o: #{p.o}".to_s.encode('koi8-u'))
   mail = p.generate
 rescue

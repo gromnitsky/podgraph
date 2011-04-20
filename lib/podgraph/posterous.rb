@@ -34,13 +34,13 @@ module Podgraph
 
       @trestle = trestle
 
-      fp = File.new(filename)
+      fp = (filename == STDIN ? STDIN : File.new(filename))
       begin
         make(fp)
       rescue
         raise $!
       ensure
-        fp.close()
+        fp.close unless fp == STDIN
       end
     end
 

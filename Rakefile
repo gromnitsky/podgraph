@@ -23,7 +23,8 @@ spec = Gem::Specification.new do |s|
   s.test_files = FileList['test/test_*.rb']
   s.rdoc_options << '-m' << 'Podgraph'
   
-  s.add_dependency('mail', '>= 2.2.17')
+  s.add_dependency('mail', '~> 2.2.17')
+  s.add_development_dependency('git', '>= 1.2.5')
 end
 
 Rake::GemPackageTask.new(spec).define
