@@ -1,8 +1,5 @@
 -*-org-*-
 
-* 0.1.0
-- CL options for email
-
 * 0.0.1
 
 + rewrite README.rdoc to make it look more like a manpage

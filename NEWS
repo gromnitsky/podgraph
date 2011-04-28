@@ -1,5 +1,12 @@
 -*- text -*-
 
+0.1.5
+-----
+
+Fri Apr 29 00:31:16 EEST 2011
+
+- Added '--to' & '--from' command line options.
+
 0.0.5
 -----
 

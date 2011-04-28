@@ -69,7 +69,7 @@ class TestMime < MiniTest::Unit::TestCase
   
   # NOTE: run
   #
-  # ../bin/podgraph -S simple.html | grep -v -e ^To: -e '^Date:' -e ^Message-ID: -e '^user-agent:'|md5
+  # ../bin/podgraph -S simple.html | grep -i -v -e ^To: -e '^Date:' -e ^Message-ID: -e '^user-agent:'|md5
   #
   # to get a new hash for this test.
   def test_simple
@@ -78,10 +78,10 @@ class TestMime < MiniTest::Unit::TestCase
     mail.sub!(/^Date: .+$\n/, '')
     mail.sub!(/^To: .+$\n/, '')
     mail.sub!(/^Message-ID: .+$\n/, '')
-    mail.sub!(/^user-agent: .+$\n/, '')
+    mail.sub!(/^User-Agent: .+$\n/, '')
 #    p mail
 #    puts mail
-    assert_equal('c7ac3a5797496efd323c7017c4516cb1',
+    assert_equal('54c07d54f21efd28cc4634bd6b61efaf',
                  Digest::MD5.hexdigest(mail + "\n"))
   end
 
