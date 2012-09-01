@@ -7,12 +7,7 @@ include FileUtils
 require_relative '../lib/podgraph/trestle'
 include Podgraph
 
-# don't run tests automatically if they were invoked as 'gem check -t ...'
-if $0 =~ /gem/
-  require 'minitest/unit'
-else
-  require 'minitest/autorun'
-end
+require 'minitest/autorun'
 
 # Return the right directory for (probably executable) _c_.
 def cmd(c)

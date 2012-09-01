@@ -1,9 +1,8 @@
 # -*-ruby-*-
 
-require 'rake'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
+require 'rdoc/task'
 require 'rake/clean'
-require 'rake/rdoctask'
 require 'rake/testtask'
 
 require_relative 'lib/podgraph/meta'
@@ -29,7 +28,7 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency('git', '>= 1.2.5')
 end
 
-Rake::GemPackageTask.new(spec).define
+Gem::PackageTask.new(spec).define
 
 task default: [:repackage]
 

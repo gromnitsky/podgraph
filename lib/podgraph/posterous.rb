@@ -1,4 +1,6 @@
+gem 'mail', '~> 2.3.0'
 require 'mail'
+
 require 'rexml/document'
 require 'yaml'
 require 'optparse'
