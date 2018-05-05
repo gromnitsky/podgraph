@@ -1,0 +1,25 @@
+PATH
+  remote: .
+  specs:
+    podgraph (1.0.0)
+      mail (~> 2.7.0)
+      nokogiri (~> 1.8.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    mail (2.7.0)
+      mini_mime (>= 0.1.1)
+    mini_mime (1.0.0)
+    mini_portile2 (2.3.0)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  podgraph!
+
+BUNDLED WITH
+   1.16.1
