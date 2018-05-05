@@ -50,7 +50,13 @@ class Transformer
   end
 
   def subject
-    'todo'
+    @subject ||= begin
+                   node = @doc.css('h1,h2,h3,h4').first
+                   return 'no subject' unless node
+                   text = node.text
+                   node.remove
+                   text
+                 end
   end
 
   def html; @doc.to_s; end
