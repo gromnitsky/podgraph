@@ -49,12 +49,48 @@ class Transformer
     images
   end
 
+  def subject
+    'todo'
+  end
+
   def html; @doc.to_s; end
 
   def self.local_img? node, attr = ['src'] # TODO: allow file:// scheme
     attr.any? do |k|
       node[k] && node[k].strip.size > 0 &&
         !node[k].start_with?('data:') && !URI(node[k]).scheme
+    end
+  end
+end
+
+class MailGenerator
+  def initialize tr
+    @tr = tr
+    @mail = Mail.new
+    @mail.subject = tr.subject
+    tr.images.empty? ? simple : multipart_related
+  end
+
+  def to_s; @mail.to_s; end
+
+  def simple
+    @mail.content_disposition 'inline'
+    @mail.content_type 'text/html; charset="UTF-8"'
+    @mail.body @tr.html
+  end
+
+  def multipart_related
+    @mail.content_type 'Multipart/Related'
+    html = @tr.html
+    @mail.html_part do
+      content_type 'text/html; charset=UTF-8'
+      body html
+    end
+
+    @tr.images.each do |k,v|
+      @mail.add_file v[:name]
+      @mail.parts.last.content_disposition 'inline'
+      @mail.parts.last.content_id "<#{k}>"
     end
   end
 end
