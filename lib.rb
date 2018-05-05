@@ -42,12 +42,8 @@ class Transformer
     end.each do |img|
       fail "unsupported file format: #{img['src']}" if !MiniMime.lookup_by_filename img['src']
 
-      file = File.read img['src']
-      sha1 = Digest::SHA1.hexdigest file
-      images[sha1] ||= {
-        name: img['src'],
-        base64: Base64.encode64(file),
-      }
+      sha1 = Digest::SHA1.hexdigest File.read img['src']
+      images[sha1] ||= { name: img['src'] }
       img['src'] = "cid:#{sha1}"
     end
     images
