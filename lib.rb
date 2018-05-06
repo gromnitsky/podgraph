@@ -70,9 +70,10 @@ class Transformer
 end
 
 class MailGenerator
-  def initialize tr
+  def initialize tr, recipients = []
     @tr = tr
     @mail = Mail.new
+    @mail.to = recipients
     @mail.subject = tr.subject
     tr.images.empty? ? simple : multipart_related
   end

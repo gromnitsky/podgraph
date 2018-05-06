@@ -1,9 +1,4 @@
 #!/usr/bin/env ruby
 
 require_relative './lib'
-
-tr = Transformer.new $stdin.read
-#puts tr.html
-#puts tr.images
-
-puts MailGenerator.new tr
+puts MailGenerator.new Transformer.new($stdin.read), ARGV

@@ -12,7 +12,17 @@ Ruby 2.3+
 
 ## Usage
 
-    $ pandoc post.md | podgraph | sendmail XXX@blogger.com
+Blogger:
+
+    $ pandoc post.md | podgraph | sendmail -i XXX@blogger.com
+
+Wordpress:
+
+    $ pandoc post.md | podgraph XXX@post.wordpress.com | sendmail -it
+
+## Bugs
+
+* WP strips out inlined svgs
 
 ## History
 
