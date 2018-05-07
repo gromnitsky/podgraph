@@ -5,7 +5,9 @@ require 'base64'
 require 'nokogiri'
 require 'mail'
 
-class Transformer
+module Podgraph; end
+
+class Podgraph::Transformer
   def initialize html
     @doc = Nokogiri.HTML html
     svg!
@@ -69,7 +71,7 @@ class Transformer
   end
 end
 
-class MailGenerator
+class Podgraph::MailGenerator
   def initialize tr, recipients = []
     @tr = tr
     @mail = Mail.new

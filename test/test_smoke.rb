@@ -1,5 +1,7 @@
-require_relative '../lib'
+require_relative '../podgraph'
 require 'minitest/autorun'
+
+include Podgraph
 
 class TestTransformer < Minitest::Test
   def test_local_img

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.files = [
     'podgraph',
-    'lib.rb',
+    'podgraph.rb',
     'package.gemspec',
     'README.md',
   ]
