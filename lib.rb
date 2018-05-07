@@ -28,9 +28,9 @@ class Transformer
 
   # replace every newline in <pre> with <br>, because Blogger
   def pre!
-    @doc.css('pre').select do |node|
+    @doc.css('pre').each do |node|
       text = node.to_s.gsub(/\n/, '<br>')
-      node.replace Nokogiri.HTML(text).css('pre')
+      node.replace Nokogiri::HTML.fragment text
     end
   end
 
