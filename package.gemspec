@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.version = '1.0.0'
+  s.version = '1.0.1'
 
   s.name = 'podgraph'
   s.summary = "Post to Blogger or Wordpress via email; inline local images"
