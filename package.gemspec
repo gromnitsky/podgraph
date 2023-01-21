@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.version = '1.0.1'
+  s.version = '1.0.2'
 
   s.name = 'podgraph'
   s.summary = "Post to Blogger or Wordpress via email; inline local images"
@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.bindir = '.'
   s.executables = ['podgraph']
 
-  s.add_runtime_dependency 'mail', '~> 2.7.0'
-  s.add_runtime_dependency 'nokogiri', '~> 1.8.2'
+  s.add_runtime_dependency 'mail', '~> 2.8.0'
+  s.add_runtime_dependency 'nokogiri', '~> 1.14.0'
 
-  s.required_ruby_version = '>= 2.3.0'
+  s.required_ruby_version = '>= 2.7.0'
 
   s.post_install_message = <<~END
     *************************************************************************

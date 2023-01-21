@@ -6,7 +6,7 @@ Creates a special 'Multipart/Related' email from an html input.
 
 ## Installation
 
-Ruby 2.3+
+Ruby 2.7+
 
     $ gem install podgraph
 
